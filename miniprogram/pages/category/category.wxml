@@ -1,0 +1,56 @@
+<view class="category-page">
+  <!-- 租户到期 -->
+  <view wx:if="{{tenantExpired}}" class="expired-mask">
+    <view class="expired-box">
+      <view class="expired-icon"></view>
+      <view class="expired-title">服务已到期</view>
+      <view class="expired-text">租户到期，请联系俱乐部管理员！</view>
+    </view>
+  </view>
+
+  <block wx:else>
+    <!-- 顶部搜索框 -->
+    <view class="search-bar">
+      <view class="search-box">
+        <input
+          class="search-input"
+          placeholder="搜索商品"
+          placeholder-class="search-placeholder"
+          confirm-type="search"
+          value="{{keyword}}"
+          bindinput="onSearchInput"
+          bindconfirm="onSearch"
+        />
+        <text wx:if="{{keyword}}" class="search-clear" bindtap="clearSearch">×</text>
+        <text class="search-btn" bindtap="onSearch">搜索</text>
+      </view>
+    </view>
+
+    <!-- 左侧分类（搜索模式隐藏） -->
+    <scroll-view wx:if="{{!searching}}" scroll-y class="cat-side">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="cat-side-item {{activeId === item.id ? 'active' : ''}}"
+        bindtap="selectCategory"
+        data-id="{{item.id}}"
+      >{{item.name}}</view>
+    </scroll-view>
+
+    <!-- 右侧商品 -->
+    <scroll-view scroll-y class="prod-side {{searching ? 'full' : ''}}">
+      <view wx:if="{{searching}}" class="search-result-tip">
+        <text>搜索"{{keyword}}"共 {{products.length}} 件商品</text>
+        <text class="back-cat" bindtap="clearSearch">返回分类</text>
+      </view>
+      <view wx:if="{{!products.length && !loading}}" class="empty">{{searching ? '未找到相关商品' : '该分类暂无商品'}}</view>
+      <view class="prod-item" wx:for="{{products}}" wx:key="id" bindtap="goProduct" data-id="{{item.id}}">
+        <image src="{{item.coverUrl}}" mode="aspectFill" class="prod-img" />
+        <view class="prod-info">
+          <view class="prod-name">{{item.name}}</view>
+          <view class="prod-price">¥{{item.price}}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </block>
+</view>

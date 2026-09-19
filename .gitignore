@@ -1,0 +1,42 @@
+node_modules/
+**/node_modules/
+
+# Runtime secrets and local overrides
+.env
+**/.env
+!.env.example
+!**/.env.example
+
+# Generated builds and caches
+dist/
+dist-*/
+**/dist/
+**/dist-*/
+*.timestamp-*.mjs
+.vite/
+coverage/
+
+# Runtime data
+logs/
+**/logs/
+uploads/
+**/uploads/*
+!**/uploads/.gitkeep
+*.log
+*.db
+*.db-*
+*.db.bak
+*.bak
+
+# Local tooling and temporary files
+.deploy-tmp/
+.workbuddy/
+demo-miniprogram/
+miniprogram/project.private.config.json
+/_*.py
+__pycache__/
+*.py[cod]
+*.tmp
+*.new
+.DS_Store
+Thumbs.db

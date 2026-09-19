@@ -1,0 +1,58 @@
+.category-page { display: flex; flex-direction: column; height: 100vh; background: #f5f7fa; }
+
+/* 搜索框 */
+.search-bar { padding: 16rpx 20rpx; background: #fff; flex-shrink: 0; }
+.search-box {
+  display: flex; align-items: center; gap: 16rpx;
+  background: #f0f2f5; border-radius: 32rpx; padding: 0 24rpx; height: 64rpx;
+}
+.search-input { flex: 1; font-size: 26rpx; color: #1f2d3d; }
+.search-placeholder { color: #909399; }
+.search-clear { color: #c0c4cc; font-size: 32rpx; padding: 0 6rpx; }
+.search-btn { color: #2d6a9f; font-size: 26rpx; font-weight: 600; flex-shrink: 0; }
+
+.cat-body { display: flex; flex: 1; overflow: hidden; }
+.cat-side { width: 180rpx; background: #f0f2f5; flex-shrink: 0; }
+.cat-side-item {
+  padding: 30rpx 20rpx; font-size: 26rpx; color: #606266; text-align: center;
+  border-left: 6rpx solid transparent;
+}
+.cat-side-item.active {
+  background: #fff; color: #2d6a9f; font-weight: 600; border-left-color: #2d6a9f;
+}
+.prod-side { flex: 1; padding: 20rpx; }
+.prod-side.full { padding-top: 0; }
+.prod-item {
+  display: flex; gap: 20rpx; background: #fff; border-radius: 12rpx;
+  padding: 20rpx; margin-bottom: 20rpx;
+}
+.prod-img { width: 160rpx; height: 160rpx; border-radius: 10rpx; background: #f0f2f5; flex-shrink: 0; }
+.prod-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.prod-name { font-size: 28rpx; color: #1f2d3d; line-height: 1.5; }
+.prod-price { font-size: 32rpx; color: #e6a23c; font-weight: 600; }
+.empty { text-align: center; color: #909399; padding-top: 200rpx; font-size: 26rpx; }
+
+/* 搜索结果提示 */
+.search-result-tip {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 24rpx; color: #909399; padding: 8rpx 4rpx 20rpx;
+}
+.back-cat { color: #2d6a9f; font-weight: 600; }
+
+/* 租户到期全屏提示 */
+.expired-mask {
+  position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+  background: #f5f7fa; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+}
+.expired-box { text-align: center; padding: 40rpx; }
+.expired-icon {
+  width: 100rpx; height: 100rpx; margin: 0 auto 30rpx;
+  border-radius: 50%; background: #e6a23c; position: relative;
+}
+.expired-icon::after {
+  content: '!'; color: #fff; font-size: 60rpx; font-weight: 600;
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -52%);
+}
+.expired-title { font-size: 36rpx; font-weight: 600; color: #1f2d3d; margin-bottom: 16rpx; }
+.expired-text { font-size: 28rpx; color: #606266; }

@@ -1,0 +1,54 @@
+<view class="page" wx:if="{{product}}">
+  <!-- 商品图 -->
+  <swiper wx:if="{{product.images.length}}" class="gallery" indicator-dots circular>
+    <swiper-item wx:for="{{product.images}}" wx:key="id">
+      <image src="{{item.url}}" mode="aspectFill" class="gallery-img" />
+    </swiper-item>
+  </swiper>
+  <image wx:else src="{{product.coverUrl}}" mode="aspectFill" class="gallery-img" />
+
+  <!-- 价格与名称 -->
+  <view class="info-card">
+    <view class="price-row">
+      <text class="price">¥{{product.price}}</text>
+      <text class="sales">已售 {{product.salesCount}}</text>
+    </view>
+    <view class="name">{{product.name}}</view>
+  </view>
+
+  <!-- 收货资料 -->
+  <view class="section">
+    <view class="section-title">收货资料</view>
+    <view class="form-row">
+      <text class="label">平台</text>
+      <input class="input" value="{{profile.platform}}" data-field="platform" bindinput="onInput" placeholder="如：微信 / QQ" />
+    </view>
+    <view class="form-row">
+      <text class="label">账号</text>
+      <input class="input" value="{{profile.identifier}}" data-field="identifier" bindinput="onInput" placeholder="收货账号" />
+    </view>
+    <view class="form-row">
+      <text class="label">地址</text>
+      <input class="input" value="{{profile.address}}" data-field="address" bindinput="onInput" placeholder="收货地址" />
+    </view>
+  </view>
+
+  <!-- 描述 -->
+  <view class="section" wx:if="{{product.description}}">
+    <view class="section-title">商品详情</view>
+    <view class="desc">{{product.description}}</view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar">
+    <view class="qty">
+      <text class="qty-label">数量</text>
+      <view class="qty-ctrl">
+        <view class="qty-btn" bindtap="changeQty" data-delta="-1">-</view>
+        <text class="qty-num">{{quantity}}</text>
+        <view class="qty-btn" bindtap="changeQty" data-delta="1">+</view>
+      </view>
+    </view>
+    <button class="buy-btn" :disabled="{{submitting}}" bindtap="buyNow">{{submitting ? '处理中...' : '立即购买'}}</button>
+  </view>
+</view>

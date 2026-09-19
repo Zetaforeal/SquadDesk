@@ -1,0 +1,43 @@
+<view class="page">
+  <!-- 租户到期 -->
+  <view wx:if="{{tenantExpired}}" class="expired-mask">
+    <view class="expired-box">
+      <view class="expired-icon"></view>
+      <view class="expired-title">服务已到期</view>
+      <view class="expired-text">租户到期，请联系俱乐部管理员！</view>
+    </view>
+  </view>
+
+  <!-- 未登录 -->
+  <view class="user-card" wx:elif="{{!loggedIn}}" bindtap="doLogin">
+    <view class="avatar placeholder">登录</view>
+    <view class="user-info">
+      <view class="user-name">点击登录</view>
+      <view class="user-sub">微信一键登录</view>
+    </view>
+  </view>
+
+  <!-- 已登录 -->
+  <view class="user-card" wx:else>
+    <image wx:if="{{user && user.avatarUrl}}" src="{{user.avatarUrl}}" class="avatar" mode="aspectFill" />
+    <view class="avatar placeholder" wx:else>我</view>
+    <view class="user-info">
+      <view class="user-name">{{user ? user.nickname : '微信用户'}}</view>
+      <view class="user-sub" wx:if="{{profile}}">{{profile.platform || '未填写资料'}} · {{profile.identifier || ''}}</view>
+    </view>
+  </view>
+
+  <!-- 菜单 -->
+  <view class="menu">
+    <view class="menu-item" bindtap="goOrders">
+      <text>我的订单</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="contactService">
+      <text>联系客服</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <view class="tip">支付后订单自动进入派单池，可在「我的订单」查看实时进度</view>
+</view>

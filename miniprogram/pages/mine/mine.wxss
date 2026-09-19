@@ -1,0 +1,47 @@
+.page { min-height: 100vh; background: #f5f7fa; padding: 30rpx 24rpx; }
+
+.user-card {
+  background: linear-gradient(135deg, #2d6a9f, #3a8bc8); border-radius: 16rpx;
+  padding: 40rpx 30rpx; display: flex; align-items: center; gap: 24rpx;
+}
+.avatar {
+  width: 110rpx; height: 110rpx; border-radius: 50%; background: rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 34rpx; font-weight: 600;
+}
+.user-name { color: #fff; font-size: 34rpx; font-weight: 600; }
+.user-sub { color: rgba(255,255,255,0.8); font-size: 24rpx; margin-top: 8rpx; }
+
+.menu {
+  background: #fff; border-radius: 12rpx; margin-top: 24rpx; overflow: hidden;
+}
+.menu-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 30rpx; font-size: 30rpx; color: #1f2d3d;
+  border-bottom: 1rpx solid #f0f2f5;
+}
+.menu-item:last-child { border-bottom: none; }
+.arrow { color: #c0c4cc; font-size: 36rpx; }
+
+.tip {
+  margin-top: 30rpx; text-align: center; font-size: 24rpx; color: #c0c4cc; line-height: 1.6;
+}
+
+
+/* 租户到期全屏提示 */
+.expired-mask {
+  position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+  background: #f5f7fa; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+}
+.expired-box { text-align: center; padding: 40rpx; }
+.expired-icon {
+  width: 100rpx; height: 100rpx; margin: 0 auto 30rpx;
+  border-radius: 50%; background: #e6a23c; position: relative;
+}
+.expired-icon::after {
+  content: "!"; color: #fff; font-size: 60rpx; font-weight: 600;
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -52%);
+}
+.expired-title { font-size: 36rpx; font-weight: 600; color: #1f2d3d; margin-bottom: 16rpx; }
+.expired-text { font-size: 28rpx; color: #606266; }

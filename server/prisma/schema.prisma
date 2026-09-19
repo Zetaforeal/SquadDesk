@@ -1,0 +1,466 @@
+// ============================================================
+// 多租户 SaaS 商城派单平台 — 唯一 Prisma Schema（MySQL 8.0）
+// 约定：
+//   - 所有业务表含 tenant_id（Int，租户隔离）
+//   - 租户内唯一键一律复合唯一
+//   - 金额统一 Decimal（佣金累计 Decimal(12,2)）
+//   - 状态用 Enum 保证取值域
+//   - 业务代码时间统一走 utils/time.js（网络校准北京时间），
+//     DB 侧连接串显式 timezone=+08:00
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- 3.1 租户与账号体系 ----------
+
+/// 俱乐部（租户）
+model Club {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(100)
+  code       String    @unique @db.VarChar(50) // 租户编码，如 club001
+  status     Int       @default(1) // 1=启用 0=停用
+  expiresAt  DateTime? @map("expires_at") // NULL=永久
+  maxPlayers Int?      @map("max_players") // 打手数量上限（NULL=不限，演示版用）
+  maxOrders  Int?      @map("max_orders") // 订单总数上限（NULL=不限，演示版用）
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  adminUsers  AdminUser[]
+  players     Player[]
+  users       User[]
+  clubConfigs ClubConfig[]
+
+  @@map("clubs")
+}
+
+/// 管理员（超管 + 俱乐部管理员）
+model AdminUser {
+  id             Int       @id @default(autoincrement())
+  tenantId       Int?      @map("tenant_id") // NULL=超级管理员
+  username       String    @db.VarChar(50)
+  password       String    @db.VarChar(255) // bcrypt
+  role           AdminRole @default(CLUB_ADMIN)
+  loginFailCount Int       @default(0) @map("login_fail_count") // 连续登录失败次数
+  lockUntil      DateTime? @map("lock_until") // 账号锁定截止时间（防爆破）
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  club Club? @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, username])
+  @@index([tenantId])
+  @@map("admin_users")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  CLUB_ADMIN
+}
+
+/// 打手（含上线状态）
+model Player {
+  id              Int          @id @default(autoincrement())
+  tenantId        Int          @map("tenant_id")
+  username        String       @db.VarChar(50)
+  password        String       @db.VarChar(255) // bcrypt
+  nickname        String       @db.VarChar(50)
+  status          PlayerStatus @default(active) // 管理员启用/禁用
+  online          Boolean      @default(false) // 打手上线/下线
+  totalCommission Decimal      @default(0) @map("total_commission") @db.Decimal(12, 2)
+  qrcodePath      String?      @map("qrcode_path") @db.VarChar(200) // 收款二维码（双通道）
+  loginFailCount  Int          @default(0) @map("login_fail_count") // 连续登录失败次数
+  lockUntil       DateTime?    @map("lock_until") // 账号锁定截止时间（防爆破）
+  lastLoginAt     DateTime?    @map("last_login_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
+
+  club           Club            @relation(fields: [tenantId], references: [id])
+  orders         Order[]         @relation("PlayerOrders")
+  assignedOrders Order[]         @relation("AssignedOrders")
+  commissionLogs CommissionLog[]
+  dispatchLogs   DispatchLog[]
+
+  @@unique([tenantId, username])
+  @@index([tenantId, status, online])
+  @@index([tenantId, totalCommission])
+  @@map("players")
+}
+
+enum PlayerStatus {
+  active
+  disabled
+}
+
+/// 小程序用户（openid 租户内唯一）
+model User {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int      @map("tenant_id")
+  openid    String   @db.VarChar(64)
+  unionid   String?  @db.VarChar(64)
+  nickname  String?  @db.VarChar(50)
+  avatarUrl String?  @map("avatar_url") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  club    Club         @relation(fields: [tenantId], references: [id])
+  profile UserProfile?
+  orders  Order[]
+
+  @@unique([tenantId, openid])
+  @@index([tenantId])
+  @@map("users")
+}
+
+/// 用户收货资料（表头列名可配置，语义由后台列名决定）
+model UserProfile {
+  id         Int      @id @default(autoincrement())
+  tenantId   Int      @map("tenant_id")
+  userId     Int      @unique @map("user_id")
+  platform   String   @default("") @db.VarChar(100)
+  identifier String   @default("") @db.VarChar(100)
+  address    String   @default("") @db.VarChar(100)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@map("user_profiles")
+}
+
+// ---------- 3.2 商城域（多租户改造，商品含佣金比例）----------
+
+/// 商品分类
+model Category {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int      @map("tenant_id")
+  name      String   @db.VarChar(100)
+  icon      String?  @db.VarChar(255) // 双通道图片
+  sortOrder Int      @default(0) @map("sort_order")
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@index([tenantId, sortOrder])
+  @@map("categories")
+}
+
+/// 商品（新增佣金比例字段）
+model Product {
+  id             Int      @id @default(autoincrement())
+  tenantId       Int      @map("tenant_id")
+  categoryId     Int      @map("category_id")
+  name           String   @db.VarChar(100)
+  price          Decimal  @db.Decimal(10, 2)
+  description    String?  @db.Text
+  coverUrl       String?  @map("cover_url") @db.VarChar(255) // 双通道图片
+  published      Boolean  @default(true)
+  sortOrder      Int      @default(0) @map("sort_order")
+  salesCount     Int      @default(0) @map("sales_count")
+  commissionRate Decimal  @default(0) @map("commission_rate") @db.Decimal(5, 4) // 0.8000=80%
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  category           Category            @relation(fields: [categoryId], references: [id])
+  images             ProductImage[]
+  orderItems         OrderItem[]
+  homeProductModules HomeProductModule[]
+
+  @@index([tenantId, categoryId, published])
+  @@index([tenantId, published, sortOrder])
+  @@map("products")
+}
+
+/// 商品详情图
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int      @map("tenant_id")
+  productId Int      @map("product_id")
+  url       String   @db.VarChar(255) // 双通道图片
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([tenantId, productId])
+  @@map("product_images")
+}
+
+/// 首页布局（每俱乐部独立）
+model HomeLayout {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int      @map("tenant_id")
+  name      String   @default("默认布局") @db.VarChar(50)
+  isActive  Boolean  @default(false) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  modules HomeModule[]
+
+  @@index([tenantId, isActive])
+  @@map("home_layouts")
+}
+
+/// 首页模块
+model HomeModule {
+  id        Int        @id @default(autoincrement())
+  tenantId  Int        @map("tenant_id")
+  layoutId  Int        @map("layout_id")
+  type      ModuleType
+  sortOrder Int        @default(0) @map("sort_order")
+  config    Json? // 模块配置（BANNER/ACTIVITY 的 image 走双通道）
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  layout   HomeLayout          @relation(fields: [layoutId], references: [id])
+  products HomeProductModule[]
+
+  @@index([tenantId, layoutId])
+  @@map("home_modules")
+}
+
+enum ModuleType {
+  BANNER
+  SECTION_TITLE
+  ACTIVITY
+  PRODUCT_LIST
+}
+
+/// 模块-商品关联
+model HomeProductModule {
+  id        Int @id @default(autoincrement())
+  tenantId  Int @map("tenant_id")
+  moduleId  Int @map("module_id")
+  productId Int @map("product_id")
+  sortOrder Int @default(0) @map("sort_order")
+
+  module  HomeModule @relation(fields: [moduleId], references: [id])
+  product Product    @relation(fields: [productId], references: [id])
+
+  @@index([tenantId, moduleId])
+  @@map("home_product_modules")
+}
+
+// ---------- 3.3 订单与派单域（核心融合表）----------
+
+/// 订单（支付状态 + 派单状态双轴状态机，佣金快照）
+model Order {
+  id                Int            @id @default(autoincrement())
+  tenantId          Int            @map("tenant_id")
+  orderNo           String         @unique @map("order_no") @db.VarChar(32) // CLUB{租户码}{日期}{随机}
+  userId            Int            @map("user_id")
+  totalAmount       Decimal        @map("total_amount") @db.Decimal(10, 2)
+  commissionAmount  Decimal        @map("commission_amount") @db.Decimal(10, 2) // 下单时快照
+  commissionRate    Decimal        @map("commission_rate") @db.Decimal(5, 4)
+  payStatus         PayStatus      @default(PENDING) @map("pay_status")
+  dispatchStatus    DispatchStatus @default(PENDING_GRAB) @map("dispatch_status")
+  dispatchType      DispatchType   @default(GRAB) @map("dispatch_type")
+  assignedPlayerId  Int?           @map("assigned_player_id")
+  acceptedPlayerId  Int?           @map("accepted_player_id")
+  partnerPlayerId   Int?           @map("partner_player_id") // 搭档打手（搭档模式）
+  autoDispatch      Boolean        @default(false) @map("auto_dispatch") // 下单时开关快照
+  autoDispatchAt    DateTime?      @map("auto_dispatch_at") // paid_at + 120s
+  autoDispatchDone  Boolean        @default(false) @map("auto_dispatch_done") // 幂等
+  prepayId          String?        @map("prepay_id") @db.VarChar(64)
+  transactionId     String?        @map("transaction_id") @db.VarChar(64)
+  paidAt            DateTime?      @map("paid_at")
+  cancelledAt       DateTime?      @map("cancelled_at")
+  profileData       String?        @map("profile_data") @db.Text // 收货资料快照 JSON
+  screenshotPath    String?        @map("screenshot_path") @db.VarChar(200) // 双通道图片
+  submitNote        String?        @map("submit_note") @db.Text
+  settleAt          DateTime?      @map("settle_at")
+  readyWithdrawAt   DateTime?      @map("ready_withdraw_at")
+  withdrawAppliedAt DateTime?      @map("withdraw_applied_at")
+  pendingPaymentAt  DateTime?      @map("pending_payment_at")
+  completedAt       DateTime?      @map("completed_at")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  user           User            @relation(fields: [userId], references: [id])
+  acceptedPlayer Player?         @relation("PlayerOrders", fields: [acceptedPlayerId], references: [id])
+  assignedPlayer Player?         @relation("AssignedOrders", fields: [assignedPlayerId], references: [id])
+  items          OrderItem[]
+  dispatchLogs   DispatchLog[]
+  commissionLogs CommissionLog[]
+  chatMessages   ChatMessage[]
+
+  @@index([tenantId, dispatchStatus])
+  @@index([tenantId, payStatus])
+  @@index([tenantId, acceptedPlayerId])
+  @@index([dispatchStatus, autoDispatchDone, autoDispatchAt]) // 自动派单扫描索引
+  @@map("orders")
+}
+
+enum PayStatus {
+  PENDING
+  PAID
+  REFUNDED
+  CANCELLED
+}
+
+enum DispatchStatus {
+  PENDING_GRAB
+  PENDING_PARTNER
+  IN_PROGRESS
+  SUBMITTED
+  PENDING_SETTLE
+  READY_WITHDRAW
+  WITHDRAW_PENDING
+  PENDING_PAYMENT
+  COMPLETED
+  CANCELLED
+}
+
+enum DispatchType {
+  GRAB
+  ASSIGN
+  AUTO
+}
+
+/// 订单明细（价格快照）
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int     @map("tenant_id")
+  orderId   Int     @map("order_id")
+  productId Int?    @map("product_id") // 商品删除后置空
+  quantity  Int     @default(1)
+  price     Decimal @db.Decimal(10, 2)
+
+  order   Order    @relation(fields: [orderId], references: [id])
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, orderId])
+  @@map("order_items")
+}
+
+/// 派单流水（审计）
+model DispatchLog {
+  id        Int            @id @default(autoincrement())
+  tenantId  Int            @map("tenant_id")
+  orderId   Int            @map("order_id")
+  action    DispatchAction
+  playerId  Int?           @map("player_id")
+  note      String?        @db.VarChar(255)
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  order  Order   @relation(fields: [orderId], references: [id])
+  player Player? @relation(fields: [playerId], references: [id])
+
+  @@index([tenantId, orderId])
+  @@map("dispatch_logs")
+}
+
+enum DispatchAction {
+  GRAB
+  GRAB_WITH_PARTNER
+  PARTNER_CONFIRM
+  PARTNER_REJECT
+  PARTNER_CANCEL
+  ASSIGN
+  AUTO_ASSIGN
+  RELEASE
+  REJECT
+  SKIP_COOLDOWN
+}
+
+/// 佣金发放记录
+model CommissionLog {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int      @map("tenant_id")
+  orderId   Int      @map("order_id")
+  playerId  Int      @map("player_id")
+  amount    Decimal  @db.Decimal(12, 2)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  order  Order  @relation(fields: [orderId], references: [id])
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@index([tenantId, playerId])
+  @@index([tenantId, orderId])
+  @@map("commission_logs")
+}
+
+/// 订单沟通（管理员-打手）
+/// 注：sender_id 为逻辑外键（sender_type 区分指向 admin_users 或 players），不建物理外键
+model ChatMessage {
+  id         Int            @id @default(autoincrement())
+  tenantId   Int            @map("tenant_id")
+  orderId    Int            @map("order_id")
+  senderType ChatSenderType @map("sender_type")
+  senderId   Int            @map("sender_id")
+  senderName String         @map("sender_name") @db.VarChar(50)
+  content    String         @db.Text
+  createdAt  DateTime       @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([tenantId, orderId])
+  @@map("chat_messages")
+}
+
+enum ChatSenderType {
+  admin
+  player
+}
+
+// ---------- 3.4 配置域 ----------
+
+/// 俱乐部配置（租户级 KV，替代原 system_configs 的租户键）
+model ClubConfig {
+  id          Int      @id @default(autoincrement())
+  tenantId    Int      @map("tenant_id")
+  configKey   String   @map("config_key") @db.VarChar(64)
+  configValue String?  @map("config_value") @db.Text
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  club Club @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, configKey])
+  @@map("club_configs")
+}
+
+/// 平台全局配置
+model SystemConfig {
+  id          Int      @id @default(autoincrement())
+  configKey   String   @unique @map("config_key") @db.VarChar(64)
+  configValue String?  @map("config_value") @db.Text
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
+}
+
+// ---------- 3.5 异步任务域 ----------
+
+/// 异步通知任务（API 落库即返回，Worker 消费执行）
+model AsyncJob {
+  id         Int            @id @default(autoincrement())
+  tenantId   Int?           @map("tenant_id") // 平台级任务为 NULL
+  jobType    String         @map("job_type") @db.VarChar(50) // SUBSCRIBE_MSG / SMS_CODE / PHONE_LOGIN / ...
+  payload    Json
+  status     AsyncJobStatus @default(PENDING)
+  retryCount Int            @default(0) @map("retry_count")
+  maxRetries Int            @default(3) @map("max_retries")
+  nextRunAt  DateTime       @default(now()) @map("next_run_at") // 重试退避后下次执行时间
+  lastError  String?        @map("last_error") @db.Text
+  createdAt  DateTime       @default(now()) @map("created_at")
+  executedAt DateTime?      @map("executed_at")
+
+  @@index([status, nextRunAt])
+  @@index([tenantId])
+  @@map("async_jobs")
+}
+
+enum AsyncJobStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+}

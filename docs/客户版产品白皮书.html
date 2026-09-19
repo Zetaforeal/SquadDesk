@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>CLUB·SaaS 智慧商城派单系统 — 产品白皮书 V2.0</title>
+<style>
+  /* ===== 打印分页基础 ===== */
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif; color: #1f2d3d; -webkit-font-smoothing: antialiased; }
+
+  .page {
+    width: 210mm; height: 297mm;
+    position: relative; overflow: hidden;
+    page-break-after: always; break-after: page;
+  }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+
+  /* 通用配色 */
+  :root {
+    --navy: #0c1f33;
+    --navy-2: #16334f;
+    --blue: #2d6a9f;
+    --gold: #c9a45c;
+    --ink: #1f2d3d;
+    --ink-2: #5f6b7a;
+    --ink-3: #909399;
+    --line: #e8edf2;
+    --bg: #f7f9fc;
+  }
+
+  .wrap { padding: 22mm 18mm; height: 100%; display: flex; flex-direction: column; }
+
+  /* ===== 页眉 ===== */
+  .phead { display: flex; justify-content: space-between; align-items: center; padding-bottom: 6mm; border-bottom: 1px solid var(--line); margin-bottom: 9mm; }
+  .phead .brand { font-size: 13px; font-weight: 700; color: var(--navy); letter-spacing: 1px; }
+  .phead .brand span { color: var(--gold); }
+  .phead .page-tag { font-size: 10px; color: var(--ink-3); letter-spacing: 2px; }
+
+  /* ===== 章节标题 ===== */
+  .sec-head { margin-bottom: 10mm; }
+  .sec-head .en { font-size: 10px; letter-spacing: 5px; color: var(--blue); text-transform: uppercase; margin-bottom: 3mm; font-weight: 600; }
+  .sec-head h2 { font-size: 26px; font-weight: 700; color: var(--navy); letter-spacing: 1px; }
+  .sec-head .bar { width: 14mm; height: 1.2mm; background: linear-gradient(90deg, var(--gold), transparent); margin-top: 4mm; border-radius: 2px; }
+  .sec-head .desc { font-size: 12px; color: var(--ink-2); margin-top: 4mm; line-height: 1.8; }
+
+  /* ===== 封面 ===== */
+  .cover {
+    background:
+      radial-gradient(circle at 82% 18%, rgba(201,164,92,0.18) 0%, transparent 32%),
+      radial-gradient(circle at 12% 85%, rgba(45,106,159,0.35) 0%, transparent 40%),
+      linear-gradient(150deg, #081726 0%, #0c1f33 45%, #16334f 100%);
+    color: #fff; display: flex; flex-direction: column; justify-content: space-between;
+    padding: 26mm 22mm 20mm; position: relative;
+  }
+  .cover::before {
+    content: ""; position: absolute; inset: 0; opacity: 0.35;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-size: 12mm 12mm;
+  }
+  .cover .topline { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+  .cover .logo { font-size: 15px; font-weight: 700; letter-spacing: 3px; }
+  .cover .logo span { color: var(--gold); }
+  .cover .ver { font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.25); padding: 4px 14px; border-radius: 999px; }
+  .cover .mid { position: relative; z-index: 1; margin-top: 60mm; }
+  .cover .badge {
+    display: inline-block; border: 1px solid rgba(201,164,92,0.55); color: var(--gold);
+    border-radius: 999px; padding: 6px 22px; font-size: 11px; letter-spacing: 4px; margin-bottom: 10mm;
+  }
+  .cover h1 { font-size: 52px; font-weight: 800; letter-spacing: 6px; line-height: 1.25; }
+  .cover h1 em { font-style: normal; color: var(--gold); }
+  .cover .slogan { font-size: 17px; color: rgba(255,255,255,0.82); letter-spacing: 3px; margin-top: 7mm; font-weight: 300; }
+  .cover .divider { width: 26mm; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); margin: 9mm 0; }
+  .cover .tags { display: flex; gap: 8mm; position: relative; z-index: 1; }
+  .cover .tags .t { font-size: 12px; color: rgba(255,255,255,0.75); letter-spacing: 1px; }
+  .cover .tags .t i { font-style: normal; color: var(--gold); margin-right: 2mm; }
+  .cover .foot { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-end; }
+  .cover .foot .doc-type { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 3px; }
+  .cover .foot .doc-type b { display: block; font-size: 13px; color: rgba(255,255,255,0.85); margin-bottom: 3px; letter-spacing: 1px; }
+  .cover .foot .year { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 2px; }
+
+  /* ===== 指标卡 ===== */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6mm; }
+  .stat { background: #fff; border: 1px solid var(--line); border-radius: 5mm; padding: 9mm 6mm; text-align: center; position: relative; overflow: hidden; }
+  .stat::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.2mm; background: linear-gradient(90deg, var(--blue), var(--gold)); opacity: 0.7; }
+  .stat .num { font-size: 30px; font-weight: 800; color: var(--blue); letter-spacing: 1px; }
+  .stat .num small { font-size: 16px; }
+  .stat .label { font-size: 12px; color: var(--ink-2); margin-top: 3mm; letter-spacing: 1px; }
+
+  /* ===== 功能卡片 ===== */
+  .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5.5mm; }
+  .feat { background: #fff; border: 1px solid var(--line); border-radius: 4.5mm; padding: 7mm 7mm; transition: none; }
+  .feat .ficon { width: 11mm; height: 11mm; border-radius: 3mm; background: linear-gradient(135deg, #e6f1fb, #f3f8fd); display: flex; align-items: center; justify-content: center; margin-bottom: 4mm; }
+  .feat .ficon svg { width: 6mm; height: 6mm; stroke: var(--blue); }
+  .feat h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 2.5mm; }
+  .feat p { font-size: 11.5px; color: var(--ink-2); line-height: 1.75; }
+  .feat .chip { display: inline-block; font-size: 10px; color: var(--blue); background: #eef5fb; border-radius: 999px; padding: 2px 10px; margin: 0 6px 3px 0; }
+
+  /* ===== 流程 ===== */
+  .flow { display: flex; align-items: stretch; justify-content: center; gap: 0; flex-wrap: nowrap; margin: 4mm 0 8mm; }
+  .flow-step { background: #fff; border: 1px solid var(--line); border-radius: 3.5mm; padding: 5mm 3mm; text-align: center; flex: 1; position: relative; }
+  .flow-step .dot { width: 2.6mm; height: 2.6mm; border-radius: 50%; background: var(--gold); margin: 0 auto 2.5mm; box-shadow: 0 0 0 3px rgba(201,164,92,0.18); }
+  .flow-step .t { font-size: 12px; font-weight: 700; color: var(--navy); }
+  .flow-step .d { font-size: 9.5px; color: var(--ink-3); margin-top: 1.5mm; line-height: 1.5; }
+  .flow-arrow { display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 16px; font-weight: 300; padding: 0 1mm; }
+
+  /* ===== 多端协同 ===== */
+  .ends { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6mm; }
+  .end-card { background: #fff; border: 1px solid var(--line); border-radius: 5mm; padding: 7mm 6.5mm; position: relative; }
+  .end-card .tag { position: absolute; top: 6mm; right: 6mm; font-size: 9px; color: var(--gold); border: 1px solid rgba(201,164,92,0.4); padding: 2px 10px; border-radius: 999px; letter-spacing: 1px; }
+  .end-card .eicon { width: 13mm; height: 13mm; border-radius: 4mm; background: linear-gradient(135deg, #0c1f33, #16334f); display: flex; align-items: center; justify-content: center; margin-bottom: 5mm; }
+  .end-card .eicon svg { width: 7mm; height: 7mm; stroke: var(--gold); }
+  .end-card h3 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4mm; }
+  .end-card ul { list-style: none; }
+  .end-card li { font-size: 11px; color: var(--ink-2); line-height: 2.1; padding-left: 5mm; position: relative; }
+  .end-card li::before { content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1.2mm; height: 1.2mm; border-radius: 50%; background: var(--blue); }
+
+  /* ===== 特性行 ===== */
+  .feature-row { display: flex; align-items: center; gap: 8mm; background: #fff; border: 1px solid var(--line); border-radius: 4.5mm; padding: 6mm 7mm; margin-bottom: 4.5mm; }
+  .feature-row .rnum { width: 10mm; height: 10mm; border-radius: 50%; background: linear-gradient(135deg, var(--navy), var(--blue)); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .feature-row h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 1.5mm; }
+  .feature-row p { font-size: 11px; color: var(--ink-2); line-height: 1.7; }
+
+  /* ===== 安全网格 ===== */
+  .secure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .secure-item { display: flex; gap: 5mm; align-items: flex-start; background: #fff; border: 1px solid var(--line); border-radius: 4mm; padding: 5.5mm 6mm; }
+  .secure-item .sicon { flex-shrink: 0; width: 10mm; height: 10mm; border-radius: 3mm; background: linear-gradient(135deg, #e1f5ee, #eefaf5); display: flex; align-items: center; justify-content: center; }
+  .secure-item .sicon svg { width: 5.5mm; height: 5.5mm; stroke: #0f6e56; }
+  .secure-item h4 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 1.5mm; }
+  .secure-item p { font-size: 10.5px; color: var(--ink-2); line-height: 1.65; }
+
+  /* ===== 技术架构图 ===== */
+  .arch { background: linear-gradient(150deg, #0c1f33, #16334f); border-radius: 6mm; padding: 8mm 9mm; color: #fff; }
+  .arch .layers { display: flex; flex-direction: column; gap: 4mm; }
+  .arch .layer { display: flex; align-items: center; gap: 5mm; }
+  .arch .lname { width: 22mm; font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1px; text-align: right; flex-shrink: 0; }
+  .arch .boxes { flex: 1; display: flex; gap: 3.5mm; flex-wrap: wrap; }
+  .arch .box { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 3mm; padding: 4mm 5mm; font-size: 10.5px; color: rgba(255,255,255,0.92); text-align: center; flex: 1; min-width: 34mm; }
+  .arch .box small { display: block; font-size: 9px; color: rgba(255,255,255,0.55); margin-top: 1mm; }
+  .arch .arrow-line { height: 4mm; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.35); font-size: 11px; }
+  .arch .arrow-line::after { content: "▼"; font-size: 8px; }
+
+  /* ===== 性能指标 ===== */
+  .perf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 6mm; }
+  .perf { background: #fff; border: 1px solid var(--line); border-radius: 4mm; padding: 5.5mm 6mm; display: flex; align-items: center; gap: 5mm; }
+  .perf .pnum { font-size: 22px; font-weight: 800; color: var(--blue); flex-shrink: 0; min-width: 30mm; }
+  .perf .pnum small { font-size: 12px; font-weight: 600; }
+  .perf .plabel { font-size: 10.5px; color: var(--ink-2); line-height: 1.6; }
+  .perf .plabel b { color: var(--navy); }
+
+  /* ===== 服务 ===== */
+  .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm; }
+  .service { text-align: center; padding: 8mm 6mm; background: #fff; border: 1px solid var(--line); border-radius: 5mm; }
+  .service .sicon { width: 13mm; height: 13mm; margin: 0 auto 4.5mm; border-radius: 50%; background: linear-gradient(135deg, #e6f1fb, #f3f8fd); display: flex; align-items: center; justify-content: center; }
+  .service .sicon svg { width: 6.5mm; height: 6.5mm; stroke: var(--blue); }
+  .service h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 2.5mm; }
+  .service p { font-size: 10.5px; color: var(--ink-2); line-height: 1.7; }
+
+  /* ===== 联系 ===== */
+  .contact { background: linear-gradient(150deg, #0c1f33, #16334f); color: #fff; border-radius: 6mm; padding: 10mm 9mm; text-align: center; }
+  .contact h2 { font-size: 22px; margin-bottom: 3mm; letter-spacing: 2px; }
+  .contact .sub { color: rgba(255,255,255,0.65); font-size: 12px; margin-bottom: 7mm; letter-spacing: 1px; }
+  .contact-channels { display: flex; justify-content: center; gap: 6mm; }
+  .channel { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 4mm; padding: 5.5mm 9mm; min-width: 60mm; }
+  .channel .c-label { font-size: 10px; color: var(--gold); letter-spacing: 2px; margin-bottom: 2mm; }
+  .channel .c-value { font-size: 17px; font-weight: 700; letter-spacing: 1px; }
+  .channel .c-hint { font-size: 9.5px; color: rgba(255,255,255,0.5); margin-top: 2mm; }
+
+  .pfoot { margin-top: auto; padding-top: 6mm; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-size: 9.5px; color: var(--ink-3); letter-spacing: 1px; }
+  .pfoot .gold { color: var(--gold); }
+
+  .btn-zone { text-align: center; margin-top: 8mm; }
+  .btn-zone .btn { display: inline-block; background: linear-gradient(135deg, var(--gold), #d8b878); color: #0c1f33; font-size: 12px; font-weight: 700; padding: 4.5mm 16mm; border-radius: 999px; letter-spacing: 2px; box-shadow: 0 4mm 10mm rgba(201,164,92,0.35); }
+
+  .quote { background: linear-gradient(135deg, #f0f6fc, #f8fbfe); border-left: 1.2mm solid var(--gold); border-radius: 0 4mm 4mm 0; padding: 6mm 7mm; font-size: 12.5px; color: var(--ink-2); line-height: 2; margin-bottom: 7mm; }
+  .quote b { color: var(--navy); }
+
+  /* ===== 核心价值 ===== */
+  .value-card { background: #fff; border: 1px solid var(--line); border-radius: 4.5mm; padding: 7mm 7mm; }
+  .value-card .vnum { font-size: 26px; font-weight: 800; color: rgba(45,106,159,0.16); letter-spacing: 1px; margin-bottom: 2mm; }
+  .value-card h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 2mm; letter-spacing: 1px; }
+  .value-card p { font-size: 11px; color: var(--ink-2); line-height: 1.75; }
+
+  /* ===== 定价 ===== */
+  .plan { background: #fff; border: 1px solid var(--line); border-radius: 5mm; padding: 8mm 8mm; position: relative; display: flex; flex-direction: column; }
+  .plan-hot { border: 1.2mm solid var(--gold); box-shadow: 0 5mm 16mm rgba(201,164,92,0.22); }
+  .plan-reco { position: absolute; top: -4.5mm; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), #d8b878); color: #0c1f33; font-size: 9.5px; font-weight: 700; letter-spacing: 2px; padding: 2.5mm 8mm; border-radius: 999px; white-space: nowrap; }
+  .plan-tag { display: inline-block; font-size: 9px; color: var(--blue); border: 1px solid rgba(45,106,159,0.4); border-radius: 999px; padding: 1.5mm 5mm; letter-spacing: 1px; margin-bottom: 4mm; }
+  .plan-name { font-size: 20px; font-weight: 800; color: var(--navy); letter-spacing: 2px; margin-bottom: 4mm; }
+  .plan-price b { font-size: 34px; font-weight: 800; color: var(--navy); }
+  .plan-price span { font-size: 12px; color: var(--ink-3); margin-left: 2mm; }
+  .plan-price em { font-style: normal; font-size: 22px; font-weight: 700; color: var(--gold); margin-left: 4mm; }
+  .plan-price small { font-size: 10px; color: var(--ink-3); margin-left: 1.5mm; }
+  .plan-line { height: 1px; background: var(--line); margin: 5mm 0; }
+  .plan-list { list-style: none; flex: 1; }
+  .plan-list li { font-size: 11.5px; color: var(--ink-2); line-height: 2.15; padding-left: 6mm; position: relative; }
+  .plan-list li::before { content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1.4mm; height: 1.4mm; border-radius: 50%; background: var(--gold); }
+  .plan-foot { margin-top: 5mm; font-size: 10px; color: var(--ink-3); letter-spacing: 0.5px; border-top: 1px dashed var(--line); padding-top: 3.5mm; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ================= 封面 ================= -->
+<div class="page cover">
+  <div class="topline">
+    <div class="logo">CLUB<span>·</span>SAAS</div>
+    <div class="ver">PRODUCT WHITEPAPER V2.0</div>
+  </div>
+  <div class="mid">
+    <div class="badge">PRODUCT WHITE PAPER · 产品白皮书</div>
+    <h1>智慧商城派单<br><em>一体化</em>系统</h1>
+    <div class="slogan">让每一笔生意，都在掌控之中</div>
+    <div class="divider"></div>
+    <div class="tags">
+      <div class="t"><i>◆</i>全链路商城管理</div>
+      <div class="t"><i>◆</i>智能派单引擎</div>
+      <div class="t"><i>◆</i>多端协同作战</div>
+      <div class="t"><i>◆</i>安全合规无忧</div>
+    </div>
+  </div>
+  <div class="foot">
+    <div class="doc-type"><b>CLUB·SaaS 产品白皮书</b>DIGITAL COMMERCE &amp; DISPATCH SOLUTION</div>
+    <div class="year">2026 · CONFIDENTIAL</div>
+  </div>
+</div>
+
+<!-- ================= 系统总览 ================= -->
+<div class="page" style="background: var(--bg);">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">01 / SYSTEM OVERVIEW</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">About System</div>
+      <h2>一套系统，管好你的整个生意</h2>
+      <div class="bar"></div>
+      <div class="desc">
+        CLUB·SaaS 是面向俱乐部运营者打造的全栈数字化解决方案，覆盖
+        <b style="color:var(--navy)">商品管理、下单支付、打手派单、进度跟踪、佣金结算、提现打款</b>
+        全业务闭环。从客户下单到完成交付，每一环都在你的掌控之中，让经营变得更简单、更高效、更透明。
+      </div>
+    </div>
+    <div class="quote">
+      <b>一句话理解 CLUB·SaaS：</b>它是你的「商城前台 + 派单中枢 + 结算大脑」三合一 ——
+      客户在微信小程序里下单支付，系统自动把订单派给最合适的打手，打手完成后提交证据，你审核放行，
+      佣金按规则自动结算、扫码打款。全程数据留痕，笔笔账目清晰。
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">6<small>+</small></div><div class="label">核心业务模块</div></div>
+      <div class="stat"><div class="num">3</div><div class="label">终端协同覆盖</div></div>
+      <div class="stat"><div class="num">99.9<small>%</small></div><div class="label">服务可用性保障</div></div>
+      <div class="stat"><div class="num">100<small>%</small></div><div class="label">数据独立隔离</div></div>
+    </div>
+    <div style="height: 9mm;"></div>
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 5.5mm;">
+      <div class="value-card">
+        <div class="vnum">01</div>
+        <h4>省心</h4>
+        <p>服务器、维护、升级全托管，你只管做生意，技术的事交给我们。</p>
+      </div>
+      <div class="value-card">
+        <div class="vnum">02</div>
+        <h4>透明</h4>
+        <p>订单、佣金、提现全程留痕，每一分钱都有来处、有去处。</p>
+      </div>
+      <div class="value-card">
+        <div class="vnum">03</div>
+        <h4>增长</h4>
+        <p>专属小程序 + 订阅消息触达，把客户从流量变成复购。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 核心功能矩阵 ================= -->
+<div class="page">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">02 / CORE FEATURES</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Core Features</div>
+      <h2>核心能力矩阵</h2>
+      <div class="bar"></div>
+      <div class="desc">从「客户进店」到「打手收钱」，八个能力模块覆盖经营全场景，开箱即用。</div>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h3>商城运营后台</h3>
+        <p>商品上下架、分类管理、价格库存一键维护；首页可视化装修，轮播、专栏、商品位自由组合，<span class="chip">秒级生效</span></p>
+      </div>
+      <div class="feat">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <h3>打手智能派单</h3>
+        <p>订单自动进入派单池，打手在线抢单；支持智能派单引擎、搭档协同，接单结单全流程<span class="chip">状态可溯</span></p>
+      </div>
+      <div class="feat">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 7H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>佣金结算体系</h3>
+        <p>订单佣金下单即快照，结单审核后进入冷却期，支持提现申请、审核、扫码打款，<span class="chip">账目笔笔清晰</span></p>
+      </div>
+      <div class="feat">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/><path d="M21 3l-9 9"/></svg></div>
+        <h3>客户进度透明</h3>
+        <p>客户支付后实时查看派单进度：已支付、派单中、已接单、进行中、已完成，<span class="chip">全链路可视化</span></p>
+      </div>
+      <div class="feat">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div>
+        <h3>打手专属工作台</h3>
+        <p>打手独立工作台：抢单大厅、我的接单、提交结单、佣金明细、收款码管理，<span class="chip">接单打款一站完成</span></p>
+      </div>
+      <div class="feat">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h3>微信小程序触达</h3>
+        <p>为俱乐部生成专属小程序，客户扫码即购；订单状态通过订阅消息主动触达，<span class="chip">转化留存双提升</span></p>
+      </div>
+      <div class="feat">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 13l4-4 3 3 5-6"/></svg></div>
+        <h3>经营数据看板</h3>
+        <p>订单量、交易额、打手绩效、待办提醒一屏总览，经营决策<span class="chip">有据可依</span></p>
+      </div>
+      <div class="feat">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>团队协作管理</h3>
+        <p>打手档案、权限分级、搭档协同、绩效统计，团队管理<span class="chip">井然有序</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 全流程闭环 ================= -->
+<div class="page" style="background: var(--bg);">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">03 / BUSINESS FLOW</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Business Flow</div>
+      <h2>全流程业务闭环</h2>
+      <div class="bar"></div>
+      <div class="desc">从客户下单到打手收钱，八个节点环环相扣，每一步都有状态、有记录、有回执。</div>
+    </div>
+    <div class="flow">
+      <div class="flow-step"><div class="dot"></div><div class="t">客户下单</div><div class="d">小程序一键购买</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">在线支付</div><div class="d">微信安全支付</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">智能派单</div><div class="d">自动 / 手动 / 抢单</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">打手接单</div><div class="d">单人或搭档协同</div></div>
+    </div>
+    <div class="flow" style="margin-top: 0;">
+      <div class="flow-step"><div class="dot"></div><div class="t">交付结单</div><div class="d">上传证据截图</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">审核确认</div><div class="d">证据留存可溯</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">佣金结算</div><div class="d">冷却期后自动就绪</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">提现打款</div><div class="d">申请审核扫码付</div></div>
+    </div>
+    <div class="quote" style="margin-top: 4mm;">
+      <b>为什么闭环很重要？</b> 每一笔订单从产生到结算，都经历「支付确认 → 派单 → 交付 → 审核 → 结算 → 打款」的完整链路，
+      任何一环都有明确负责人和状态记录。你不需要追着问进度，系统替你盯着每一步。
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">8<small>+</small></div><div class="label">流程节点</div></div>
+      <div class="stat"><div class="num">双<small>维</small></div><div class="label">订单状态机</div></div>
+      <div class="stat"><div class="num">全<small>程</small></div><div class="label">操作留痕</div></div>
+      <div class="stat"><div class="num">0<small>漏</small></div><div class="label">账目错漏</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 多端协同 ================= -->
+<div class="page">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">04 / MULTI-TERMINAL</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Multi-Terminal Collaboration</div>
+      <h2>三大终端，协同作战</h2>
+      <div class="bar"></div>
+      <div class="desc">客户、打手、运营者，各用各的终端，信息实时同步，永不掉线。</div>
+    </div>
+    <div class="ends">
+      <div class="end-card">
+        <div class="tag">客户侧</div>
+        <div class="eicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+        <h3>微信小程序端</h3>
+        <ul>
+          <li>专属小程序，扫码即购</li>
+          <li>商品浏览、分类导航、下单支付</li>
+          <li>订单进度实时追踪</li>
+          <li>订阅消息主动通知</li>
+          <li>待支付订单一键续付</li>
+        </ul>
+      </div>
+      <div class="end-card">
+        <div class="tag">运营侧</div>
+        <div class="eicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <h3>运营管理后台</h3>
+        <ul>
+          <li>商品、分类、首页装修管理</li>
+          <li>订单全流程管理与审核</li>
+          <li>手动派单、进度干预</li>
+          <li>佣金结算与提现审核</li>
+          <li>经营数据与打手绩效看板</li>
+        </ul>
+      </div>
+      <div class="end-card">
+        <div class="tag">打手侧</div>
+        <div class="eicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>打手工作台</h3>
+        <ul>
+          <li>派单池实时抢单</li>
+          <li>我的接单、状态一目了然</li>
+          <li>上传证据、发起结单</li>
+          <li>佣金明细、提现申请</li>
+          <li>收款码自助管理</li>
+        </ul>
+      </div>
+    </div>
+    <div class="quote" style="margin-top: 7mm;">
+      <b>信息实时同步：</b> 客户下单 → 打手端立刻出现可抢订单；打手提交结单 → 管理端立刻出现待审核；
+      审核通过 → 佣金自动进入可提现状态。三个终端共享同一份实时数据，<b>你随时掌握全局</b>。
+    </div>
+  </div>
+</div>
+
+<!-- ================= 智能派单引擎 ================= -->
+<div class="page" style="background: var(--bg);">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">05 / DISPATCH ENGINE</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Intelligent Dispatch</div>
+      <h2>智能派单引擎</h2>
+      <div class="bar"></div>
+      <div class="desc">告别「人工喊单、群里接龙」的原始模式，三种派单方式自由切换，让订单永远有人接。</div>
+    </div>
+    <div class="feature-row">
+      <div class="rnum">1</div>
+      <div style="flex:1">
+        <h3>抢单模式 · 打手自由竞争</h3>
+        <p>订单支付后自动进入派单池，所有在线打手实时可见、先到先得。打手积极性拉满，接单效率最大化。</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="rnum">2</div>
+      <div style="flex:1">
+        <h3>自动派单 · 智能匹配不空转</h3>
+        <p>开启自动派单后，系统在支付确认后自动将订单指派给合适的打手，无人接单不积压，订单永不滞留。</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="rnum">3</div>
+      <div style="flex:1">
+        <h3>手动指派 · 关键单由你掌控</h3>
+        <p>重要客户、特殊需求，运营者手动指派给指定打手，一人一单一清二楚，服务质量自己把关。</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="rnum">4</div>
+      <div style="flex:1">
+        <h3>搭档模式 · 双人协同作战</h3>
+        <p>复杂订单可邀请搭档共同完成，双方都能上传证据、发起结单、实时沟通，<b style="color:var(--navy)">佣金自动平分</b>。</p>
+      </div>
+    </div>
+    <div class="quote" style="margin-top: 4mm;">
+      <b>派单不空窗：</b> 无论订单多密集、打手是否在线，系统都保证每条订单有去处、有进度、有结果。
+      派单开关灵活配置，经营策略随时调整。
+    </div>
+  </div>
+</div>
+
+<!-- ================= 佣金结算体系 ================= -->
+<div class="page">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">06 / SETTLEMENT</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Commission Settlement</div>
+      <h2>佣金结算体系</h2>
+      <div class="bar"></div>
+      <div class="desc">钱的事，绝不能糊涂。从佣金生成到打手收钱，五道关卡层层把关，笔笔可查。</div>
+    </div>
+    <div class="flow">
+      <div class="flow-step"><div class="dot"></div><div class="t">佣金快照</div><div class="d">下单即锁定比例</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">结单审核</div><div class="d">证据确认通过</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">冷却期</div><div class="d">冷静复核可配置</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">提现申请</div><div class="d">打手自主发起</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">审核打款</div><div class="d">收款码扫码支付</div></div>
+    </div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 8mm;">
+      <div class="feat" style="background:#fff;">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 7H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>按商品维度配置佣金</h3>
+        <p>每个商品可单独设置佣金比例，下单时自动快照锁定。之后怎么改配置，都不影响已产生的佣金 —— 规则透明、绝不扯皮。</p>
+      </div>
+      <div class="feat" style="background:#fff;">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>搭档订单佣金平分</h3>
+        <p>搭档模式完成的订单，佣金自动五五平分，双方各自记账、各自提现。谁干了活、谁拿了钱，系统算得明明白白。</p>
+      </div>
+      <div class="feat" style="background:#fff;">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <h3>冷却期机制</h3>
+        <p>结单审核通过后进入冷却期（时长可配置），给你充足时间复核订单质量。确认无误后佣金自动进入可提现状态。</p>
+      </div>
+      <div class="feat" style="background:#fff;">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+        <h3>打款凭证可溯</h3>
+        <p>提现审核通过后展示打手收款码，扫码打款留痕。全部流水在系统中永久留存，随时可查、对账无忧。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 安全防护体系 ================= -->
+<div class="page" style="background: var(--bg);">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">07 / SECURITY</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Security &amp; Reliability</div>
+      <h2>安全与稳定，我们认真对待</h2>
+      <div class="bar"></div>
+      <div class="desc">你的数据、你的客户、你的钱 —— 我们用企业级防护替你守住。</div>
+    </div>
+    <div class="secure-grid">
+      <div class="secure-item">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div><h4>数据独立隔离</h4><p>每个俱乐部的经营数据独立存储、互不可见，你的商业数据只属于你。</p></div>
+      </div>
+      <div class="secure-item">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div><h4>账号安全防护</h4><p>登录防暴力破解、异常自动锁定、权限分级管理，从入口守住你的系统。</p></div>
+      </div>
+      <div class="secure-item">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div><h4>内容安全过滤</h4><p>全站 XSS 注入防护，用户输入智能清洗，杜绝恶意脚本与内容污染。</p></div>
+      </div>
+      <div class="secure-item">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><h4>订单资金安全</h4><p>佣金快照、金额服务端校验、全流程审计留痕，杜绝篡改与错付。</p></div>
+      </div>
+      <div class="secure-item">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+        <div><h4>文件上传校验</h4><p>上传文件白名单校验 + 智能压缩，只收合规文件，拒绝一切风险载体。</p></div>
+      </div>
+      <div class="secure-item">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div><h4>传输安全加密</h4><p>全链路 HTTPS 加密传输，支付、登录、订单数据全程防护，链路不被窥探。</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 技术架构与性能 ================= -->
+<div class="page">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">08 / ARCHITECTURE</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Architecture &amp; Performance</div>
+      <h2>企业级架构，性能与稳定兼得</h2>
+      <div class="bar"></div>
+      <div class="desc">专业服务器集群 + 负载均衡 + 进程守护，从底层保障每一笔交易稳定高效。</div>
+    </div>
+    <div class="arch">
+      <div class="layers">
+        <div class="layer">
+          <div class="lname">用户触达层</div>
+          <div class="boxes">
+            <div class="box">微信小程序<small>客户下单 · 进度查询</small></div>
+            <div class="box">运营管理后台<small>商家日常运营</small></div>
+            <div class="box">打手工作台<small>接单 · 结算</small></div>
+          </div>
+        </div>
+        <div class="arrow-line"></div>
+        <div class="layer">
+          <div class="lname">网关接入层</div>
+          <div class="boxes">
+            <div class="box">HTTPS 安全网关<small>全链路加密</small></div>
+            <div class="box">负载均衡<small>流量智能分发</small></div>
+            <div class="box">Gzip 传输压缩<small>带宽成本直降</small></div>
+          </div>
+        </div>
+        <div class="arrow-line"></div>
+        <div class="layer">
+          <div class="lname">业务服务层</div>
+          <div class="boxes">
+            <div class="box">商城服务<small>商品 · 订单 · 支付</small></div>
+            <div class="box">派单引擎<small>智能调度 · 搭档协同</small></div>
+            <div class="box">结算服务<small>佣金 · 提现 · 打款</small></div>
+          </div>
+        </div>
+        <div class="arrow-line"></div>
+        <div class="layer">
+          <div class="lname">数据存储层</div>
+          <div class="boxes">
+            <div class="box">核心数据库<small>高可靠存储 · 定期备份</small></div>
+            <div class="box">文件存储<small>证据截图 · 商品图片</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="perf-grid">
+      <div class="perf">
+        <div class="pnum">49<small>×</small></div>
+        <div class="plabel"><b>登录并发吞吐提升</b><br>深度性能调优，扛住集中爆发的访问高峰</div>
+      </div>
+      <div class="perf">
+        <div class="pnum">80<small>%</small></div>
+        <div class="plabel"><b>图片体积智能瘦身</b><br>自动压缩转换，页面加载快到飞起</div>
+      </div>
+      <div class="perf">
+        <div class="pnum">Gzip</div>
+        <div class="plabel"><b>全链路传输压缩</b><br>静态资源极速下发，流量成本大幅下降</div>
+      </div>
+      <div class="perf">
+        <div class="pnum">7×24</div>
+        <div class="plabel"><b>进程守护自动恢复</b><br>异常自动拉起，业务连续性有保障</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 定价方案 ================= -->
+<div class="page" style="background: var(--bg);">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">09 / PRICING</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Pricing Plans</div>
+      <h2>透明定价，无隐藏费用</h2>
+      <div class="bar"></div>
+      <div class="desc">两种方案自由选择，软件授权、服务器资源、维护服务全部包含在内，明码标价、按年付费。</div>
+    </div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 7mm; margin-top: 4mm;">
+      <div class="plan">
+        <div class="plan-tag">标准方案</div>
+        <div class="plan-name">标准版</div>
+        <div class="plan-price"><b>¥2,500</b><span>/ 年</span></div>
+        <div class="plan-line"></div>
+        <ul class="plan-list">
+          <li>软件本体全套授权（所有功能模块）</li>
+          <li>高性能服务器资源提供</li>
+          <li>服务器运维与维护服务</li>
+          <li>系统持续迭代升级</li>
+          <li>基础使用支持</li>
+        </ul>
+        <div class="plan-foot">适合：快速起步，标准化运营</div>
+      </div>
+      <div class="plan plan-hot">
+        <div class="plan-reco">最受欢迎</div>
+        <div class="plan-tag" style="color:var(--gold); border-color: rgba(201,164,92,0.5);">尊享方案</div>
+        <div class="plan-name">豪华版</div>
+        <div class="plan-price"><b>¥2,500</b><span>/ 年</span><em>+ ¥999</em><small>一次性</small></div>
+        <div class="plan-line"></div>
+        <ul class="plan-list">
+          <li>标准版全部权益</li>
+          <li>微信小程序专属维护</li>
+          <li>永久一对一技术支持</li>
+          <li>优先响应与专属服务通道</li>
+          <li>专属对接顾问全程陪同</li>
+        </ul>
+        <div class="plan-foot" style="color:var(--navy);">适合：重视服务体验，长期稳定经营</div>
+      </div>
+    </div>
+    <div class="quote" style="margin-top: 8mm;">
+      <b>费用说明：</b> 年费包含软件授权与服务器等全部基础设施；豪华版另加 <b style="color:var(--navy)">¥999 一次性</b>费用，
+      即可享受小程序长期维护与永久一对一技术支持。无其他任何隐藏收费，续费透明、明明白白。
+    </div>
+  </div>
+</div>
+
+<!-- ================= 服务保障 ================= -->
+<div class="page" style="background: var(--bg);">
+  <div class="wrap">
+    <div class="phead">
+      <div class="brand">CLUB<span style="color:var(--gold)">·</span>SAAS</div>
+      <div class="page-tag">10 / SERVICE</div>
+    </div>
+    <div class="sec-head">
+      <div class="en">Service Commitment</div>
+      <h2>专属服务保障</h2>
+      <div class="bar"></div>
+      <div class="desc">不止交付一套系统，更交付持续增长的能力。</div>
+    </div>
+    <div class="services">
+      <div class="service">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+        <h3>全程部署支持</h3>
+        <p>从系统初始化到小程序上线，全程协助配置，交付即可用。</p>
+      </div>
+      <div class="service">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 13l4-4 3 3 5-6"/></svg></div>
+        <h3>运营数据洞察</h3>
+        <p>全局经营看板：订单量、交易额、打手绩效一目了然，决策有据。</p>
+      </div>
+      <div class="service">
+        <div class="sicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <h3>持续迭代升级</h3>
+        <p>系统功能持续演进，新能力自动同步，无需重复投入。</p>
+      </div>
+    </div>
+    <div class="contact" style="margin-top: 8mm;">
+      <h2>开启你的数字化经营</h2>
+      <div class="sub">现在就联系，获取专属方案与系统演示</div>
+      <div class="contact-channels">
+        <div class="channel">
+          <div class="c-label">QQ</div>
+          <div class="c-value">480788903</div>
+          <div class="c-hint">添加请备注「系统咨询」</div>
+        </div>
+        <div class="channel">
+          <div class="c-label">微信</div>
+          <div class="c-value">Zetamc1337</div>
+          <div class="c-hint">添加请备注「系统咨询」</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-zone">
+      <div class="btn">即刻获取专属演示方案</div>
+    </div>
+    <div class="pfoot">
+      <div>CLUB·SaaS 智慧商城派单一体化系统 · 产品白皮书</div>
+      <div class="gold">© 2026 · ALL RIGHTS RESERVED</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

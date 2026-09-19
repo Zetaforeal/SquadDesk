@@ -1,0 +1,50 @@
+<view class="page">
+  <!-- 租户到期 -->
+  <view wx:if="{{tenantExpired}}" class="expired-mask">
+    <view class="expired-box">
+      <view class="expired-icon"></view>
+      <view class="expired-title">服务已到期</view>
+      <view class="expired-text">租户到期，请联系俱乐部管理员！</view>
+    </view>
+  </view>
+
+  <!-- 未登录 -->
+  <view wx:elif="{{needLogin}}" class="need-login">
+    <text>登录后查看订单</text>
+    <button class="login-btn" bindtap="goLogin">微信一键登录</button>
+  </view>
+
+  <!-- 订单列表 -->
+  <block wx:else>
+    <view class="order-card" wx:for="{{orders}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <view class="order-head">
+        <text class="order-no">{{item.orderNo}}</text>
+        <text class="status">{{item.statusText}}</text>
+      </view>
+      <view class="order-items">
+        <view class="order-item" wx:for="{{item.items}}" wx:key="id" wx:for-item="it">
+          <text class="item-name">{{it.product ? it.product.name : '商品已下架'}}</text>
+          <text class="item-qty">x{{it.quantity}}</text>
+        </view>
+      </view>
+      <view class="order-foot">
+        <text class="time">{{item.createdAtText}}</text>
+        <text class="amount">¥{{item.totalAmount}}</text>
+      </view>
+      <!-- 派单进度条 -->
+      <view class="dispatch-bar">
+        <text class="dispatch-label">派单进度</text>
+        <text class="dispatch-text">{{item.dispatchText}}</text>
+      </view>
+      <!-- 待支付：显示重新支付按钮 -->
+      <view wx:if="{{item.payStatus === 'PENDING'}}" class="pay-bar" catchtap="noop">
+        <text class="pay-tip">待支付</text>
+        <button class="pay-btn" size="mini" type="primary" loading="{{item._paying}}" bindtap="repay" data-id="{{item.id}}">重新支付</button>
+      </view>
+    </view>
+
+    <view wx:if="{{!orders.length && !loading}}" class="empty">暂无订单</view>
+    <view wx:if="{{loading}}" class="loading-text">加载中...</view>
+    <view wx:if="{{!hasMore && orders.length}}" class="no-more">没有更多了</view>
+  </block>
+</view>

@@ -1,0 +1,43 @@
+.page { min-height: 100vh; background: #f5f7fa; padding: 20rpx 24rpx 60rpx; }
+
+.status-card {
+  background: linear-gradient(135deg, #2d6a9f, #3a8bc8); border-radius: 16rpx;
+  padding: 40rpx 30rpx; color: #fff;
+}
+.status-card.done { background: linear-gradient(135deg, #67c23a, #85ce61); }
+.status-title { font-size: 38rpx; font-weight: 700; }
+.status-sub { font-size: 26rpx; opacity: 0.9; margin-top: 12rpx; }
+
+.steps { display: flex; justify-content: space-between; background: #fff; border-radius: 12rpx; padding: 30rpx 24rpx; margin-top: 20rpx; }
+.step { display: flex; flex-direction: column; align-items: center; gap: 12rpx; flex: 1; position: relative; }
+.dot { width: 20rpx; height: 20rpx; border-radius: 50%; background: #c0c4cc; }
+.dot.on { background: #2d6a9f; box-shadow: 0 0 0 8rpx rgba(45,106,159,0.15); }
+.step-text { font-size: 22rpx; color: #909399; }
+.step-text.on { color: #2d6a9f; font-weight: 600; }
+
+.card { background: #fff; border-radius: 12rpx; padding: 24rpx; margin-top: 20rpx; }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 10rpx 0; font-size: 28rpx; }
+.label { color: #606266; }
+.value { color: #1f2d3d; }
+.price { color: #e6a23c; font-weight: 700; font-size: 32rpx; }
+
+.contact-tip {
+  background: #fdf6ec; border-radius: 10rpx; padding: 20rpx; margin-top: 20rpx;
+  font-size: 24rpx; color: #e6a23c; text-align: center;
+}
+
+/* 待支付卡片 */
+.pay-card {
+  background: #fff; border-radius: 12rpx; padding: 28rpx 24rpx; margin-top: 20rpx;
+  display: flex; align-items: center; justify-content: space-between; gap: 20rpx;
+}
+.pay-tip { font-size: 24rpx; color: #606266; flex: 1; line-height: 1.6; }
+.pay-btn { background: #e6a23c; color: #fff; border-radius: 32rpx; padding: 0 36rpx; height: 56rpx; line-height: 56rpx; font-size: 26rpx; font-weight: 600; margin: 0; }
+.pay-btn::after { border: none; }
+
+.home-btn {
+  margin-top: 40rpx; background: #2d6a9f; color: #fff; border-radius: 40rpx;
+  padding: 0 48rpx; height: 64rpx; line-height: 64rpx; font-size: 28rpx; font-weight: 600;
+  box-shadow: 0 6rpx 16rpx rgba(45,106,159,0.25);
+}
+.home-btn::after { border: none; }

@@ -1,0 +1,65 @@
+.page { min-height: 100vh; background: #f5f7fa; padding: 20rpx 24rpx 40rpx; }
+
+.need-login { display: flex; flex-direction: column; align-items: center; padding-top: 240rpx; color: #909399; font-size: 28rpx; }
+.login-btn {
+  margin-top: 30rpx; background: #2d6a9f; color: #fff; border-radius: 40rpx;
+  padding: 0 56rpx; height: 64rpx; line-height: 64rpx; font-size: 28rpx; font-weight: 600;
+  box-shadow: 0 6rpx 16rpx rgba(45,106,159,0.25);
+}
+.login-btn::after { border: none; }
+
+.order-card {
+  background: #fff; border-radius: 12rpx; padding: 24rpx; margin-bottom: 20rpx;
+}
+.order-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16rpx; }
+.order-no { font-size: 24rpx; color: #909399; }
+.status { font-size: 26rpx; color: #2d6a9f; font-weight: 600; }
+
+.order-items { border-top: 1rpx solid #f0f2f5; padding: 16rpx 0; }
+.order-item { display: flex; justify-content: space-between; font-size: 28rpx; color: #1f2d3d; line-height: 1.8; }
+.item-qty { color: #909399; }
+
+.order-foot { display: flex; justify-content: space-between; align-items: center; }
+.time { font-size: 24rpx; color: #c0c4cc; }
+.amount { font-size: 32rpx; color: #e6a23c; font-weight: 700; }
+
+.dispatch-bar {
+  margin-top: 16rpx; background: #f0f7ff; border-radius: 8rpx;
+  padding: 12rpx 16rpx; display: flex; justify-content: space-between; align-items: center;
+}
+.dispatch-label { font-size: 24rpx; color: #2d6a9f; }
+.dispatch-text { font-size: 26rpx; color: #2d6a9f; font-weight: 600; }
+
+.empty { text-align: center; color: #909399; padding-top: 200rpx; font-size: 28rpx; }
+.loading-text, .no-more { text-align: center; color: #c0c4cc; font-size: 26rpx; padding: 20rpx; }
+
+
+/* 租户到期全屏提示 */
+.expired-mask {
+  position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+  background: #f5f7fa; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+}
+.expired-box { text-align: center; padding: 40rpx; }
+.expired-icon {
+  width: 100rpx; height: 100rpx; margin: 0 auto 30rpx;
+  border-radius: 50%; background: #e6a23c; position: relative;
+}
+.expired-icon::after {
+  content: "!"; color: #fff; font-size: 60rpx; font-weight: 600;
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -52%);
+}
+.expired-title { font-size: 36rpx; font-weight: 600; color: #1f2d3d; margin-bottom: 16rpx; }
+.expired-text { font-size: 28rpx; color: #606266; }
+
+/* 待支付重新支付条 */
+.pay-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ebeef5;
+}
+.pay-tip { font-size: 26rpx; color: #f56c6c; font-weight: 600; }
+.pay-btn {
+  margin: 0; height: 56rpx; line-height: 56rpx; border-radius: 28rpx;
+  font-size: 26rpx; padding: 0 28rpx;
+}
+.pay-btn::after { border: none; }

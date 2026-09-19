@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLUB·SaaS 智慧商城派单系统 — 产品白皮书</title>
+<style>
+  :root {
+    --primary: #2d6a9f;
+    --primary-dark: #1f4e77;
+    --primary-light: #e6f1fb;
+    --ink: #1f2d3d;
+    --ink-2: #5f6b7a;
+    --ink-3: #909399;
+    --line: #e8edf2;
+    --bg: #f7f9fc;
+    --gold: #c9a45c;
+    --success: #0f6e56;
+    --success-bg: #e1f5ee;
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+  /* ===== 封面 ===== */
+  .cover {
+    background: linear-gradient(135deg, #0c1f33 0%, #1f4e77 55%, #2d6a9f 100%);
+    color: #fff; padding: 90px 40px 70px; text-align: center; position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.06) 0%, transparent 45%);
+  }
+  .cover .badge {
+    display: inline-block; border: 1px solid rgba(255,255,255,0.35); border-radius: 999px;
+    padding: 6px 22px; font-size: 13px; letter-spacing: 3px; color: rgba(255,255,255,0.85); margin-bottom: 30px;
+  }
+  .cover h1 { font-size: 46px; font-weight: 700; letter-spacing: 4px; margin-bottom: 18px; }
+  .cover .sub { font-size: 18px; color: rgba(255,255,255,0.8); letter-spacing: 1px; font-weight: 300; }
+  .cover .meta { margin-top: 40px; font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 2px; }
+  .cover .meta span { margin: 0 14px; }
+
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== 章节 ===== */
+  section { padding: 56px 0; }
+  .section-title { text-align: center; margin-bottom: 44px; }
+  .section-title .en { font-size: 12px; letter-spacing: 4px; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; }
+  .section-title h2 { font-size: 30px; font-weight: 700; color: var(--ink); }
+  .section-title .line { width: 48px; height: 3px; background: var(--primary); border-radius: 2px; margin: 18px auto 0; }
+
+  /* ===== 概览数据 ===== */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .stat { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 20px; text-align: center; transition: transform .2s, box-shadow .2s; }
+  .stat:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(31,78,119,0.10); }
+  .stat .num { font-size: 30px; font-weight: 700; color: var(--primary); }
+  .stat .label { font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+
+  /* ===== 功能卡片 ===== */
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .feature { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 26px; transition: transform .2s, box-shadow .2s; }
+  .feature:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(31,78,119,0.10); }
+  .feature .icon { width: 46px; height: 46px; border-radius: 12px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+  .feature .icon svg { width: 24px; height: 24px; stroke: var(--primary); }
+  .feature h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+  .feature p { font-size: 14px; color: var(--ink-2); }
+
+  /* ===== 流程 ===== */
+  .flow { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; padding: 10px 0; }
+  .flow-step { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; text-align: center; min-width: 110px; }
+  .flow-step .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin: 0 auto 10px; }
+  .flow-step .t { font-size: 13px; font-weight: 600; }
+  .flow-step .d { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+  .flow-arrow { color: var(--primary); font-size: 20px; font-weight: 300; }
+
+  /* ===== 安全 ===== */
+  .secure-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .secure-item { display: flex; align-items: flex-start; gap: 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; }
+  .secure-item .s-icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px; background: var(--success-bg); display: flex; align-items: center; justify-content: center; }
+  .secure-item .s-icon svg { width: 20px; height: 20px; stroke: var(--success); }
+  .secure-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .secure-item p { font-size: 13px; color: var(--ink-2); }
+
+  /* ===== 服务 ===== */
+  .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .service { text-align: center; padding: 30px 20px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); }
+  .service .icon { width: 54px; height: 54px; margin: 0 auto 16px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; }
+  .service .icon svg { width: 26px; height: 26px; stroke: var(--primary); }
+  .service h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .service p { font-size: 13px; color: var(--ink-2); }
+
+  /* ===== 联系我们 ===== */
+  .contact { background: linear-gradient(135deg, #0c1f33, #1f4e77); color: #fff; border-radius: 20px; padding: 52px 40px; text-align: center; }
+  .contact h2 { font-size: 28px; margin-bottom: 12px; }
+  .contact .sub { color: rgba(255,255,255,0.7); font-size: 15px; margin-bottom: 34px; }
+  .contact-channels { display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; }
+  .channel { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; padding: 20px 34px; min-width: 210px; }
+  .channel .c-label { font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 2px; margin-bottom: 6px; }
+  .channel .c-value { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+  .channel .c-hint { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+
+  .footer { text-align: center; padding: 34px 0 48px; color: var(--ink-3); font-size: 13px; }
+
+  @media (max-width: 768px) {
+    .stats, .features, .secure-list, .services { grid-template-columns: 1fr; }
+    .cover h1 { font-size: 32px; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    .contact-channels { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 封面 ===== -->
+<div class="cover">
+  <div class="badge">PRODUCT WHITE PAPER · 产品白皮书</div>
+  <h1>CLUB·SaaS</h1>
+  <div class="sub">智慧商城派单一体化系统</div>
+  <div class="meta"><span>全链路商城管理</span>·<span>智能派单引擎</span>·<span>多端协同</span>·<span>安全合规</span></div>
+</div>
+
+<!-- ===== 关于系统 ===== -->
+<section>
+  <div class="wrap">
+    <div class="section-title">
+      <div class="en">About System</div>
+      <h2>一套系统，管好你的整个生意</h2>
+      <div class="line"></div>
+    </div>
+    <p style="text-align:center; max-width:720px; margin:0 auto 40px; color:var(--ink-2); font-size:15px;">
+      CLUB·SaaS 是面向俱乐部运营者的全栈数字化解决方案，覆盖<b style="color:var(--ink)">商品管理、下单支付、打手派单、进度跟踪、佣金结算、提现打款</b>全业务流程。
+      从客户下单到打手完成交付，每一环都在掌控之中。
+    </p>
+    <div class="stats">
+      <div class="stat"><div class="num">6+</div><div class="label">核心业务模块</div></div>
+      <div class="stat"><div class="num">4</div><div class="label">终端协同覆盖</div></div>
+      <div class="stat"><div class="num">24h</div><div class="label">服务全程在线</div></div>
+      <div class="stat"><div class="num">100%</div><div class="label">数据独立隔离</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 核心功能 ===== -->
+<section style="background:#fff; border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-title">
+      <div class="en">Core Features</div>
+      <h2>核心能力矩阵</h2>
+      <div class="line"></div>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h3>商城运营后台</h3>
+        <p>商品上架下架、分类管理、库存与价格设置，可视化首页装修——轮播、专栏、商品位自由组合，秒级生效。</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <h3>打手智能派单</h3>
+        <p>订单自动进入派单池，打手在线抢单；支持自动派单引擎，接单、结单、审核全流程状态清晰可溯。</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 7H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>佣金结算体系</h3>
+        <p>订单佣金自动快照，结单审核后进入冷却期，支持提现申请、审核、扫码打款全流程，账目笔笔清晰。</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/><path d="M21 3l-9 9"/></svg></div>
+        <h3>客户进度透明</h3>
+        <p>客户支付后实时查看派单进度——已支付、派单中、已接单、进行中、已完成，全链路可视化。</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div>
+        <h3>打手专属工作台</h3>
+        <p>打手独立端：抢单大厅、我的接单、提交结单、佣金明细、收款码管理，接单打款一站完成。</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h3>微信小程序触达</h3>
+        <p>为你的俱乐部生成专属小程序，客户扫码即购；订单状态通过订阅消息主动触达，转化与留存双提升。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 业务流程 ===== -->
+<section>
+  <div class="wrap">
+    <div class="section-title">
+      <div class="en">Business Flow</div>
+      <h2>全流程闭环</h2>
+      <div class="line"></div>
+    </div>
+    <div class="flow">
+      <div class="flow-step"><div class="dot"></div><div class="t">客户下单</div><div class="d">小程序一键购买</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">在线支付</div><div class="d">微信安全支付</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">派单引擎</div><div class="d">自动/手动派单</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">打手接单</div><div class="d">抢单完成交付</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">结单审核</div><div class="d">证据留存可溯</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="dot"></div><div class="t">佣金结算</div><div class="d">提现扫码打款</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 安全 ===== -->
+<section style="background:#fff; border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-title">
+      <div class="en">Security</div>
+      <h2>安全与稳定，我们认真对待</h2>
+      <div class="line"></div>
+    </div>
+    <div class="secure-list">
+      <div class="secure-item">
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div><h4>数据独立隔离</h4><p>每个俱乐部数据独立存储、互不可见，你的经营数据只属于你。</p></div>
+      </div>
+      <div class="secure-item">
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div><h4>账号安全防护</h4><p>登录防暴力破解、异常拦截、权限分级，从入口守住你的系统。</p></div>
+      </div>
+      <div class="secure-item">
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div><h4>订单资金安全</h4><p>佣金快照、金额服务端校验、全流程审计留痕，杜绝篡改与错付。</p></div>
+      </div>
+      <div class="secure-item">
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><h4>稳定在线服务</h4><p>专业服务器集群部署，进程守护与自动恢复，保障业务连续性。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 服务承诺 ===== -->
+<section>
+  <div class="wrap">
+    <div class="section-title">
+      <div class="en">Service</div>
+      <h2>专属服务保障</h2>
+      <div class="line"></div>
+    </div>
+    <div class="services">
+      <div class="service">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+        <h3>全程部署支持</h3>
+        <p>从系统初始化到小程序上线，全程协助配置，交付即可用。</p>
+      </div>
+      <div class="service">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 13l4-4 3 3 5-6"/></svg></div>
+        <h3>运营数据洞察</h3>
+        <p>全局经营看板：订单量、交易额、打手绩效一目了然，决策有据。</p>
+      </div>
+      <div class="service">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <h3>持续迭代升级</h3>
+        <p>系统功能持续演进，新能力自动同步，无需重复投入。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 联系我们 ===== -->
+<section>
+  <div class="wrap">
+    <div class="contact">
+      <h2>开启你的数字化经营</h2>
+      <div class="sub">现在就联系，获取专属方案与演示</div>
+      <div class="contact-channels">
+        <div class="channel">
+          <div class="c-label">QQ</div>
+          <div class="c-value">480788903</div>
+          <div class="c-hint">添加请备注「系统咨询」</div>
+        </div>
+        <div class="channel">
+          <div class="c-label">微信</div>
+          <div class="c-value">Zetamc1337</div>
+          <div class="c-hint">添加请备注「系统咨询」</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">CLUB·SaaS 智慧商城派单系统 · 产品白皮书 V1.0</div>
+
+</body>
+</html>

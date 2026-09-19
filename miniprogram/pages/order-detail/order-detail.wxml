@@ -1,0 +1,55 @@
+<view class="page" wx:if="{{order}}">
+  <!-- 状态卡片 -->
+  <view class="status-card {{order.dispatchStatus === 'COMPLETED' ? 'done' : ''}}">
+    <view class="status-title">{{order.statusText}}</view>
+    <view class="status-sub" wx:if="{{order.payStatus === 'PENDING'}}">订单待支付，请尽快完成支付</view>
+    <view class="status-sub" wx:elif="{{order.payStatus === 'PAID' && order.dispatchStatus === 'PENDING_GRAB'}}">订单已支付，等待打手接单...</view>
+    <view class="status-sub" wx:elif="{{order.payStatus === 'PAID' && order.dispatchStatus === 'IN_PROGRESS'}}">打手正在处理您的订单</view>
+    <view class="status-sub" wx:elif="{{order.dispatchStatus === 'COMPLETED'}}">订单已完成，感谢您的信任</view>
+    <view class="status-sub" wx:else>订单处理中，请留意通知</view>
+  </view>
+
+  <!-- 待支付：重新支付 -->
+  <view wx:if="{{order.payStatus === 'PENDING'}}" class="pay-card">
+    <text class="pay-tip">这笔订单还未支付，完成支付后即可安排派单</text>
+    <button class="pay-btn" size="mini" type="primary" loading="{{order._paying}}" bindtap="repay">立即支付</button>
+  </view>
+
+  <!-- 进度步骤 -->
+  <view class="steps">
+    <view class="step" wx:for="{{steps}}" wx:key="key">
+      <view class="dot {{index <= stepIndex ? 'on' : ''}}"></view>
+      <text class="step-text {{index <= stepIndex ? 'on' : ''}}">{{item.text}}</text>
+    </view>
+  </view>
+
+  <!-- 订单信息 -->
+  <view class="card">
+    <view class="row"><text class="label">订单号</text><text class="value">{{order.orderNo}}</text></view>
+    <view class="row"><text class="label">金额</text><text class="value price">¥{{order.totalAmount}}</text></view>
+    <view class="row"><text class="label">创建时间</text><text class="value">{{order.createdAtText}}</text></view>
+    <view class="row" wx:if="{{order.paidAtText}}"><text class="label">支付时间</text><text class="value">{{order.paidAtText}}</text></view>
+  </view>
+
+  <!-- 商品 -->
+  <view class="card">
+    <view class="row" wx:for="{{order.items}}" wx:key="id">
+      <text class="label">{{item.product ? item.product.name : '商品已下架'}} x{{item.quantity}}</text>
+      <text class="value">¥{{item.price}}</text>
+    </view>
+  </view>
+
+  <!-- 收货资料 -->
+  <view class="card" wx:if="{{order.profileData.platform || order.profileData.identifier || order.profileData.address}}">
+    <view class="row" wx:if="{{order.profileData.platform}}"><text class="label">平台</text><text class="value">{{order.profileData.platform}}</text></view>
+    <view class="row" wx:if="{{order.profileData.identifier}}"><text class="label">账号</text><text class="value">{{order.profileData.identifier}}</text></view>
+    <view class="row" wx:if="{{order.profileData.address}}"><text class="label">地址</text><text class="value">{{order.profileData.address}}</text></view>
+  </view>
+
+  <!-- 未接单提示联系俱乐部 -->
+  <view class="contact-tip" wx:if="{{order.dispatchStatus === 'PENDING_GRAB'}}">
+    <text>如长时间无人接单，请联系俱乐部管理员处理</text>
+  </view>
+
+  <button class="home-btn" bindtap="goHome">返回首页</button>
+</view>

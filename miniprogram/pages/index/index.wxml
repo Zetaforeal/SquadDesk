@@ -1,0 +1,62 @@
+<view class="page">
+  <!-- 租户到期：完全不可用 -->
+  <view wx:if="{{tenantExpired}}" class="expired-mask">
+    <view class="expired-box">
+      <view class="expired-icon"></view>
+      <view class="expired-title">服务已到期</view>
+      <view class="expired-text">租户到期，请联系俱乐部管理员！</view>
+    </view>
+  </view>
+
+  <!-- 加载态 -->
+  <view wx:elif="{{loading}}" class="loading">
+    <view class="spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <block wx:else>
+    <!-- 首页布局模块（单循环按原始顺序渲染，避免多循环导致模块乱序/堆叠） -->
+    <view wx:if="{{layout}}">
+      <block wx:for="{{layout.modules}}" wx:key="id">
+        <!-- 轮播 Banner -->
+        <swiper wx:if="{{item.type === 'BANNER'}}" class="banner-swiper" indicator-dots autoplay circular>
+          <swiper-item wx:for="{{item.config.banners}}" wx:key="index" wx:for-item="banner">
+            <image src="{{banner.image}}" mode="aspectFill" class="banner-img" bindtap="onBannerTap" data-product-id="{{banner.productId}}" data-link="{{banner.link}}" />
+          </swiper-item>
+        </swiper>
+
+        <!-- 分隔标题 -->
+        <view wx:elif="{{item.type === 'SECTION_TITLE'}}" class="section-title">
+          <text>{{item.config.title || ''}}</text>
+        </view>
+
+        <!-- 活动大图 -->
+        <view wx:elif="{{item.type === 'ACTIVITY'}}" class="activity-wrap">
+          <image src="{{item.config.image}}" mode="aspectFill" class="activity-img" bindtap="onBannerTap" data-link="{{item.config.link}}" />
+        </view>
+
+        <!-- 商品列表 -->
+        <view wx:elif="{{item.type === 'PRODUCT_LIST'}}" class="product-grid">
+          <view class="grid-title">{{item.config.title || '精选商品'}}</view>
+          <view class="grid">
+            <view class="grid-item" wx:for="{{item.products}}" wx:key="id" wx:for-item="p" bindtap="goProduct" data-id="{{p.id}}">
+              <image src="{{p.coverUrl}}" mode="aspectFill" class="grid-img" />
+              <view class="grid-name">{{p.name}}</view>
+              <view class="grid-price">¥{{p.price}}</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 分类快捷入口 -->
+    <view class="cat-strip" wx:if="{{categories.length}}">
+      <view class="cat-item" wx:for="{{categories}}" wx:key="id" bindtap="goCategory">
+        <image wx:if="{{item.icon}}" src="{{item.icon}}" mode="aspectFill" class="cat-icon" />
+        <text class="cat-name">{{item.name}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!layout}}" class="empty">暂无商品，敬请期待</view>
+  </block>
+</view>
