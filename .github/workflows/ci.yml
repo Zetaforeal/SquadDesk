@@ -19,7 +19,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run db:generate --workspace server
-      - run: npx prisma validate --schema server/prisma/schema.prisma
+      - run: npm run db:validate --workspace server
       - run: npm test
       - run: npm run build
       - run: npm audit --workspaces --audit-level=high

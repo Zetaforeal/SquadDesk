@@ -9,6 +9,7 @@
     "worker": "node src/worker/index.js",
     "test": "node --test",
     "db:generate": "npx prisma generate",
+    "db:validate": "prisma validate",
     "db:push": "npx prisma db push",
     "db:migrate": "npx prisma migrate dev",
     "db:migrate:deploy": "npx prisma migrate deploy",
